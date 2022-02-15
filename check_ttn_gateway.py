@@ -4,9 +4,9 @@
 # Author:  Andreas Bucher
 # Contact: icinga (at) buchermail (dot) de
 #          
-# TODO License: The Unlicense, see LICENSE file.
+# License: The Unlicense, see LICENSE file.
 
-# TODO <git-url>
+# https://github.com/anbucher/check_ttn_gateway.git
 
 """Have a look at the check's README for further details.
 """
