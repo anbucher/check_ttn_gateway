@@ -274,7 +274,7 @@ def main():
                 msg += 'WARN threshold reached: ' + str(diffSecs)
                 state = STATE_WARN
             else:
-                msg = 'OK'
+                msg = 'Gateway Status: OK - seconds since last status update: ' + str(diffSecs)
                 state = STATE_OK
 
     except Exception as ex:
