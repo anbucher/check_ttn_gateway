@@ -243,6 +243,24 @@ def get_sec_last_status(data):
     except:
         return (False, 'ValueError: Last Status could not be parsed') 
 
+def get_metrics(data):
+
+    try:
+        metrics = {
+            'version': data['last_status']['versions']['ttn-lw-gateway-server'],
+            'rxok': data['last_status']['metrics']['rxok'],
+            'rxfw': data['last_status']['metrics']['rxfw'],
+            'ackr': data['last_status']['metrics']['ackr'],
+            'txin': data['last_status']['metrics']['txin'],
+            'txok': data['last_status']['metrics']['txok'],
+            'rxin': data['last_status']['metrics']['rxin']
+        }
+
+
+        return (True, metrics)
+    except:
+        return (False, 'ValueError: Metrics could not be parsed') 
+
 def main():
     """The main function. Hier spielt die Musik.
     """
@@ -259,6 +277,7 @@ def main():
 
     response = coe(run_api_request(path, args.API_KEY))
     diffSecs = coe(get_sec_last_status(response))
+    metrics = coe(get_metrics(response))
 
     # init output vars
     msg = ''
@@ -274,7 +293,12 @@ def main():
                 msg += 'WARN threshold reached: ' + str(diffSecs)
                 state = STATE_WARN
             else:
-                msg = 'Gateway Status: OK - seconds since last status update: ' + str(diffSecs)
+                msg = 'Gateway Status: OK - ' + str(diffSecs) + 's since last status update'
+                msg += '\nVersion {}, rxok: {}, rxfw: {}, ackr: {}, txin: {}, txok: {}, rxin: {}\n'.format(
+                metrics['version'], metrics['rxok'], metrics['rxfw'], metrics['ackr'],
+                metrics['txin'], metrics['txok'], metrics['rxin'],
+                )
+
                 state = STATE_OK
 
     except Exception as ex:
