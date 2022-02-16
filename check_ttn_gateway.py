@@ -177,7 +177,7 @@ def parse_args():
 
     parser.add_argument(
         '--gatewayID',
-        help='ID your gateway.',
+        help='ID of your gateway.',
         dest='GATEWAY_ID',
         default='',
         required=True,
