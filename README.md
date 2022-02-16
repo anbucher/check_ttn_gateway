@@ -32,6 +32,17 @@ options:
 ```
 # usage example
 
+```
+./check_ttn_gateway.py --gatewayID mygatewayid --apiKey 'NNSXS.XXXXXXXXX'
+```
+
+# output
+
+```
+Gateway Status: OK - 11 sec since last status update
+Version 3.17.2, rxok: 0, rxfw: 0, ackr: 100, txin: 0, txok: 0, rxin: 0
+```
+
 # Reference
 - [Monitoring Plugins Collection](https://git.linuxfabrik.ch/linuxfabrik/monitoring-plugins)
 - [TTN API Docs](https://www.thethingsindustries.com/docs/reference/api/gateway_server/)
