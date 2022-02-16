@@ -160,23 +160,6 @@ def parse_args():
     )
 
     parser.add_argument(
-        '--gatewayID',
-        help='ID your gateway.',
-        dest='GATEWAY_ID',
-        default='',
-        required=True,
-    )
-
-    parser.add_argument(
-        '--apiKey',
-        help='Gateway apiKey. Can be generated in TTN Console',
-        dest='API_KEY',
-        default='',
-        required=True,
-    )
-
-
-    parser.add_argument(
         '-c', '--critical',
         help='Set the critical threshold CPU Usage Percentage. Default: %(default)s',
         dest='CRIT',
@@ -190,6 +173,22 @@ def parse_args():
         dest='WARN',
         type=int,
         default=DEFAULT_WARN,
+    )
+
+    parser.add_argument(
+        '--gatewayID',
+        help='ID your gateway.',
+        dest='GATEWAY_ID',
+        default='',
+        required=True,
+    )
+
+    parser.add_argument(
+        '--apiKey',
+        help='Gateway apiKey. Can be generated in TTN Console',
+        dest='API_KEY',
+        default='',
+        required=True,
     )
 
 
@@ -208,6 +207,7 @@ def run_api_request(path, apiKey):
     # Method: Gs.GetGatewayConnectionStats
     try:
         j = requests.get(path, headers=headers)
+        json_str = j.json()
 
     except Exception as ex:
         template = "An exception of type {0} occurred. Arguments:\n{1!r}"
@@ -215,10 +215,11 @@ def run_api_request(path, apiKey):
         return(False, msg)
 
     # FAKE request
-    # j = open("sample_data/response.json")
+    # f = open("sample_data/response.json")
+    # json_str = json.load(f)
 
     try:
-        return (True, json.load(j))
+        return (True, json_str)
     except:
         return(False, 'ValueError: No JSON object could be decoded')
 
