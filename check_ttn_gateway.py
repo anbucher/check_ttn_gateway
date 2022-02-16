@@ -206,7 +206,13 @@ def run_api_request(path, apiKey):
 
     # Get Status from Gateway Server API
     # Method: Gs.GetGatewayConnectionStats
-    j = requests.get(path, headers=headers)
+    try:
+        j = requests.get(path, headers=headers)
+
+    except Exception as ex:
+        template = "An exception of type {0} occurred. Arguments:\n{1!r}"
+        msg = template.format(type(ex).__name__, ex.args)
+        return(False, msg)
 
     # FAKE request
     # j = open("sample_data/response.json")
