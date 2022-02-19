@@ -65,8 +65,30 @@ STATE_UNKNOWN = 3
 #STATE_DEPENDENT = 4
 
 ########### common functions ###########
+# useful functions - Copyright by https://git.linuxfabrik.ch/linuxfabrik/lib/-/blob/master/base3.py
 
-# Function to output state and message. Copyright by https://git.linuxfabrik.ch/linuxfabrik/lib/-/blob/master/base3.py
+def get_perfdata(label, value, uom, warn, crit, min, max):
+    """Returns 'label'=value[UOM];[warn];[crit];[min];[max]
+    """
+    msg = "'{}'={}".format(label, value)
+    if uom is not None:
+        msg += uom
+    msg += ';'
+    if warn is not None:
+        msg += str(warn)
+    msg += ';'
+    if crit is not None:
+        msg += str(crit)
+    msg += ';'
+    if min is not None:
+        msg += str(min)
+    msg += ';'
+    if max is not None:
+        msg += str(max)
+    msg += ' '
+    return msg
+
+
 def oao(msg, state=STATE_OK, perfdata='', always_ok=False):
     """Over and Out (OaO)
 
@@ -248,6 +270,7 @@ def get_metrics(data):
     try:
         metrics = {
             'version': data['last_status']['versions']['ttn-lw-gateway-server'],
+            'uplink_count': data['uplink_count'],
             'rxok': data['last_status']['metrics']['rxok'],
             'rxfw': data['last_status']['metrics']['rxfw'],
             'ackr': data['last_status']['metrics']['ackr'],
@@ -255,7 +278,6 @@ def get_metrics(data):
             'txok': data['last_status']['metrics']['txok'],
             'rxin': data['last_status']['metrics']['rxin']
         }
-
 
         return (True, metrics)
     except:
@@ -271,6 +293,10 @@ def main():
     except SystemExit:
         sys.exit(STATE_UNKNOWN)
 
+    # init output vars
+    msg = ''
+    state = STATE_OK
+    perfdata = ''
 
     # Build API path
     path = args.SERVER_ADDRESS + DEFAULT_API_PATH1 + args.GATEWAY_ID + DEFAULT_API_PATH2
@@ -279,9 +305,10 @@ def main():
     diffSecs = coe(get_sec_last_status(response))
     metrics = coe(get_metrics(response))
 
-    # init output vars
-    msg = ''
-    state = STATE_OK
+    # Add metrics to perfdata
+    perfdata += get_perfdata('rxok', metrics['rxok'], None, None, None, 0, 100)
+    perfdata += get_perfdata('rxok', metrics['uplink_count'], None, None, None, 0, None)
+
 
     # check warn and crit thresholds
     try:
@@ -309,7 +336,7 @@ def main():
     # 
     # TODO: get perf values  from metrics (rxfw, ackr)
 
-    oao(msg, state)
+    oao(msg, state, perfdata)
 
 if __name__ == '__main__':
     try:
