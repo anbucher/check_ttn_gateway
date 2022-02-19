@@ -306,8 +306,13 @@ def main():
     metrics = coe(get_metrics(response))
 
     # Add metrics to perfdata
+    perfdata += get_perfdata('uplink_count', metrics['uplink_count'], None, None, None, 0, None)
     perfdata += get_perfdata('rxok', metrics['rxok'], None, None, None, 0, 100)
-    perfdata += get_perfdata('rxok', metrics['uplink_count'], None, None, None, 0, None)
+    perfdata += get_perfdata('rxfw', metrics['rxfw'], None, None, None, 0, 100)
+    perfdata += get_perfdata('ackr', metrics['ackr'], None, None, None, 0, 100)
+    perfdata += get_perfdata('txin', metrics['txin'], None, None, None, 0, 100)
+    perfdata += get_perfdata('txok', metrics['txok'], None, None, None, 0, 100)
+    perfdata += get_perfdata('rxin', metrics['rxin'], None, None, None, 0, 100)
 
 
     # check warn and crit thresholds
@@ -320,10 +325,8 @@ def main():
                 msg += 'WARN threshold reached: ' + str(diffSecs)
                 state = STATE_WARN
             else:
-                msg = 'Gateway Status: OK - ' + str(diffSecs) + 's since last status update'
-                msg += '\nVersion {}, rxok: {}, rxfw: {}, ackr: {}, txin: {}, txok: {}, rxin: {}\n'.format(
-                metrics['version'], metrics['rxok'], metrics['rxfw'], metrics['ackr'],
-                metrics['txin'], metrics['txok'], metrics['rxin'],
+                msg = 'Gateway: OK - ' + str(diffSecs) + 's since last status update'
+                msg += 'Version {}'.format(metrics['version']
                 )
 
                 state = STATE_OK
