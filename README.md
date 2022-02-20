@@ -12,23 +12,23 @@ Heavily influenced by the great work of the [Monitoring Plugin Collection](https
 # help
 
 ```
-usage: check_ttn_gateway.py [-h] [-V] [--always-ok] [--server SERVER_ADDRESS] --gatewayID GATEWAY_ID --apiKey API_KEY [-c CRIT] [-w WARN]
+usage: check_ttn_gateway.py [-h] [-V] [--always-ok] [--server SERVER_ADDRESS] [-c CRIT] [-w WARN] --gatewayID GATEWAY_ID --apiKey API_KEY
 
 This plugin lets you track if a TTN-Gateway is connected
 
-options:
--h, --help            show this help message and exit
--V, --version         show program's version number and exit
---always-ok           Always returns OK.
---server SERVER_ADDRESS
+optional arguments:
+  -h, --help            show this help message and exit
+  -V, --version         show program's version number and exit
+  --always-ok           Always returns OK.
+  --server SERVER_ADDRESS
                         Server address of your gateway. Default: https://eu1.cloud.thethings.network
---gatewayID GATEWAY_ID
-                        ID your gateway.
---apiKey API_KEY      Gateway apiKey. Can be generated in TTN Console
--c CRIT, --critical CRIT
-                        Set the critical threshold CPU Usage Percentage. Default: 3600
--w WARN, --warning WARN
-                        Set the warning threshold CPU Usage Percentage. Default: 600
+  -c CRIT, --critical CRIT
+                        Set the critical threshold seconds since last connection update. Default: 3600
+  -w WARN, --warning WARN
+                        Set the warning threshold seconds since last connection update. Default: 600
+  --gatewayID GATEWAY_ID
+                        ID of your gateway.
+  --apiKey API_KEY      Gateway apiKey. Can be generated in TTN Console
 ```
 # usage example
 
@@ -39,8 +39,8 @@ options:
 # output
 
 ```
-Gateway Status: OK - 11 sec since last status update
-Version 3.17.2, rxok: 0, rxfw: 0, ackr: 100, txin: 0, txok: 0, rxin: 0
+Gateway: OK - 21s since last status update
+Version 3.17.2|'uplink_count'=302;;;0; 'rxok'=0;;;0;100 'rxfw'=0;;;0;100 'ackr'=100;;;0;100 'txin'=0;;;0;100 'txok'=0;;;0;100 'rxin'=0;;;0;100
 ```
 
 # Reference

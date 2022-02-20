@@ -183,7 +183,7 @@ def parse_args():
 
     parser.add_argument(
         '-c', '--critical',
-        help='Set the critical threshold CPU Usage Percentage. Default: %(default)s',
+        help='Set the critical threshold seconds since last connection update. Default: %(default)s',
         dest='CRIT',
         type=int,
         default=DEFAULT_CRIT,
@@ -191,7 +191,7 @@ def parse_args():
 
     parser.add_argument(
         '-w', '--warning',
-        help='Set the warning threshold CPU Usage Percentage. Default: %(default)s',
+        help='Set the warning threshold  seconds since last connection update. Default: %(default)s',
         dest='WARN',
         type=int,
         default=DEFAULT_WARN,
@@ -326,7 +326,7 @@ def main():
                 state = STATE_WARN
             else:
                 msg = 'Gateway: OK - ' + str(diffSecs) + 's since last status update'
-                msg += 'Version {}'.format(metrics['version']
+                msg += '\nVersion {}'.format(metrics['version']
                 )
 
                 state = STATE_OK
