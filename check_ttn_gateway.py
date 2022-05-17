@@ -267,10 +267,17 @@ def get_sec_last_status(data):
 
 def get_metrics(data):
 
+    # field uplink_count in v3.19.1 not available
+    # workaround: try to get value, set to -1 if not possible
+    try:
+        uplink_count = data['uplink_count']
+    except:
+        uplink_count = -1
+
     try:
         metrics = {
             'version': data['last_status']['versions']['ttn-lw-gateway-server'],
-            'uplink_count': data['uplink_count'],
+            'uplink_count': uplink_count,
             'rxok': data['last_status']['metrics']['rxok'],
             'rxfw': data['last_status']['metrics']['rxfw'],
             'ackr': data['last_status']['metrics']['ackr'],
