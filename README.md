@@ -1,7 +1,7 @@
 # check ttn gateway status
 Icinga check command to check status of a LoraWAN TTN (The Things Network)-Gateway
 
-Heavily influenced by the great work of the [Monitoring Plugin Collection](https://git.linuxfabrik.ch/linuxfabrik/monitoring-plugins)
+Heavily influenced by the great work of the [Monitoring Plugin Collection](https://github.com/Linuxfabrik/monitoring-plugins)
 
 # installation
 
