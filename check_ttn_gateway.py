@@ -12,13 +12,13 @@
 """
 import argparse
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 import requests
 from requests.structures import CaseInsensitiveDict
 from traceback import format_exc
 
 __author__ = 'Andreas Bucher'
-__version__ = '2025101301'
+__version__ = '2025101302'
 
 
 DESCRIPTION = """This plugin lets you track if a TTN-Gateway is connected"""
@@ -247,7 +247,7 @@ def get_sec_last_status(data):
     """Read out seconds since last status update.
     """
     # Get current datetime
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
 
     # Check date difference
     try:
@@ -258,9 +258,9 @@ def get_sec_last_status(data):
         datetimestringShort = datetimestring[:-4] + 'Z'
         # parse GatewayStatus datetime
         formatStr = '%Y-%m-%dT%H:%M:%S.%fZ'
-        lastGatewayStatus = datetime.strptime(datetimestringShort, formatStr)
+        lastGatewayStatus = datetime.strptime(datetimestringShort, formatStr).replace(tzinfo=timezone.utc)
         # calculate time difference
-        diffInSecs = (abs(now - lastGatewayStatus ).days * 24 * 60 * 60) + abs(now - lastGatewayStatus ).seconds
+        diffInSecs = (now - lastGatewayStatus).total_seconds()
 
         return (True, diffInSecs)
     except:
@@ -288,10 +288,10 @@ def get_metrics(data):
             'downlink_count': downlink_count,
             # 'rxok': data['last_status']['metrics']['rxok'],
             # 'rxfw': data['last_status']['metrics']['rxfw'],
-            'ackr': data['tx_acknowledgment_count'],
-            'rtt_min': data['round_trip_times']['min'],
-            'rtt_max': data['round_trip_times']['max'],
-            'rtt_median': data['round_trip_times']['median']
+            'ackr': data.get('tx_acknowledgment_count', 0),
+            'rtt_min': data.get('round_trip_times', {}).get('min', -1.0).rstrip('s'),
+            'rtt_max': data.get('round_trip_times', {}).get('max', -1.0).rstrip('s'),
+            'rtt_median': data.get('round_trip_times', {}).get('median', -1.0).rstrip('s')
             # 'txin': data['last_status']['metrics']['txin'],
             # 'txok': data['last_status']['metrics']['txok'],
             # 'rxin': data['last_status']['metrics']['rxin']
@@ -335,7 +335,7 @@ def main():
     
     perfdata += get_perfdata('rtt_min', metrics['rtt_min'], None, 0.5, 1, 0, None)
     perfdata += get_perfdata('rtt_max', metrics['rtt_max'], None, 0.5, 1, 0, None)
-    perfdata += get_perfdata('rtt_median', metrics['rtt_median'], 0.5, 1.0, None, 0, None)
+    perfdata += get_perfdata('rtt_median', metrics['rtt_median'], None, 0.5, 1.0, 0, None)
     
 
 
