@@ -14,7 +14,7 @@ import argparse
 from difflib import diff_bytes
 import sys
 import json
-import datetime
+from datetime import datetime
 import requests
 from requests.structures import CaseInsensitiveDict
 from traceback import format_exc
@@ -249,15 +249,18 @@ def get_sec_last_status(data):
     """Read out seconds since last status update.
     """
     # Get current datetime
-    now = datetime.datetime.utcnow()
+    now = datetime.utcnow()
 
     # Check date difference
     try:
-        ### timeFormat: 2022-02-14T13:33:06.488545731Z
-        # dirty fix: remove timezone info, tz is UTC
-        datetimestring = str(data['last_status']['time']).replace('Z','')
+        ### timeFormat: 2025-10-08T22:46:51.170820369Z
+        # tz is UTC
+        datetimestring = str(data['last_status_received_at'])
+        # Trim nanoseconds to microseconds
+        datetimestringShort = datetimestring[:-4] + 'Z'
         # parse GatewayStatus datetime
-        lastGatewayStatus = datetime.datetime.strptime(datetimestring, '%Y-%m-%dT%H:%M:%S')
+        formatStr = '%Y-%m-%dT%H:%M:%S.%fZ'
+        lastGatewayStatus = datetime.strptime(datetimestringShort, formatStr)
         # calculate time difference
         diffInSecs = (abs(now - lastGatewayStatus ).days * 24 * 60 * 60) + abs(now - lastGatewayStatus ).seconds
 
@@ -275,15 +278,25 @@ def get_metrics(data):
         uplink_count = -1
 
     try:
+        downlink_count = data['downlink_count']
+    except:
+        downlink_count = -1
+
+
+    try:
         metrics = {
-            'version': data['last_status']['versions']['ttn-lw-gateway-server'],
+            'version': data['last_status']['versions']['station'],
             'uplink_count': uplink_count,
-            'rxok': data['last_status']['metrics']['rxok'],
-            'rxfw': data['last_status']['metrics']['rxfw'],
-            'ackr': data['last_status']['metrics']['ackr'],
-            'txin': data['last_status']['metrics']['txin'],
-            'txok': data['last_status']['metrics']['txok'],
-            'rxin': data['last_status']['metrics']['rxin']
+            'downlink_count': downlink_count,
+            # 'rxok': data['last_status']['metrics']['rxok'],
+            # 'rxfw': data['last_status']['metrics']['rxfw'],
+            'ackr': data['tx_acknowledgment_count'],
+            'rtt_min': data['round_trip_times']['min'],
+            'rtt_max': data['round_trip_times']['max'],
+            'rtt_median': data['round_trip_times']['median']
+            # 'txin': data['last_status']['metrics']['txin'],
+            # 'txok': data['last_status']['metrics']['txok'],
+            # 'rxin': data['last_status']['metrics']['rxin']
         }
 
         return (True, metrics)
@@ -314,12 +327,18 @@ def main():
 
     # Add metrics to perfdata
     perfdata += get_perfdata('uplink_count', metrics['uplink_count'], None, None, None, 0, None)
-    perfdata += get_perfdata('rxok', metrics['rxok'], None, None, None, 0, 100)
-    perfdata += get_perfdata('rxfw', metrics['rxfw'], None, None, None, 0, 100)
+    perfdata += get_perfdata('downlink_count', metrics['downlink_count'], None, None, None, 0, None)
+    # perfdata += get_perfdata('rxok', metrics['rxok'], None, None, None, 0, 100)
+    # perfdata += get_perfdata('rxfw', metrics['rxfw'], None, None, None, 0, 100)
     perfdata += get_perfdata('ackr', metrics['ackr'], None, None, None, 0, 100)
-    perfdata += get_perfdata('txin', metrics['txin'], None, None, None, 0, 100)
-    perfdata += get_perfdata('txok', metrics['txok'], None, None, None, 0, 100)
-    perfdata += get_perfdata('rxin', metrics['rxin'], None, None, None, 0, 100)
+    # perfdata += get_perfdata('txin', metrics['txin'], None, None, None, 0, 100)
+    # perfdata += get_perfdata('txok', metrics['txok'], None, None, None, 0, 100)
+    # perfdata += get_perfdata('rxin', metrics['rxin'], None, None, None, 0, 100)
+    
+    perfdata += get_perfdata('rtt_min', metrics['rtt_min'], None, 0.5, 1, 0, None)
+    perfdata += get_perfdata('rtt_max', metrics['rtt_max'], None, 0.5, 1, 0, None)
+    perfdata += get_perfdata('rtt_median', metrics['rtt_median'], 0.5, 1.0, None, 0, None)
+    
 
 
     # check warn and crit thresholds
