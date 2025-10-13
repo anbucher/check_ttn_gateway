@@ -11,16 +11,14 @@
 """Have a look at the check's README for further details.
 """
 import argparse
-from difflib import diff_bytes
 import sys
-import json
 from datetime import datetime
 import requests
 from requests.structures import CaseInsensitiveDict
 from traceback import format_exc
 
 __author__ = 'Andreas Bucher'
-__version__ = '2022021501'
+__version__ = '2025101301'
 
 
 DESCRIPTION = """This plugin lets you track if a TTN-Gateway is connected"""
